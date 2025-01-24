@@ -17,22 +17,21 @@ pipeline {
 
     stages { 
 
-        stage('Git Checkout Stage') { 
-
-            steps { 
-
-              checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'Bharath13041999', url: 'https://github.com/Bharath13041999/java.git']]) 
-
-            } 
-
-        } 
+         
+          stage('SCM') {
+            checkout scm
+          }
+          
+          stage('SonarQube Analysis') {
+            def scannerHome = tool 'SonarScanner';
+            withSonarQubeEnv(SONARQUBE_SERVER) {
+              sh "${scannerHome}/bin/sonar-scanner"
+            }
+          }
+        }
 
          
-
         
-
-         
-
         stage('Build Docker Image') { 
 
             steps { 
@@ -43,8 +42,7 @@ pipeline {
 
         } 
 
-         
-
+        
         stage('Scan Docker Image with Trivy') { 
 
             steps { 
@@ -54,11 +52,5 @@ pipeline {
             } 
 
         } 
+       
 
-         
-
-        stage('Run Docker Container') { 
-
-            steps { 
-
-                sh 'dock

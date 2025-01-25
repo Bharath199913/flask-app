@@ -41,9 +41,9 @@ pipeline {
             } 
         }
 
-       stage('Authenticate with GCR') {
+        stage('Authenticate with GCR') {
             steps {
-                // Use the Google Cloud plugin for authentication
+                // Use the updated Google Service Account key stored as FileCredentials
                 withCredentials([file(credentialsId: 'gcr-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     // The plugin will automatically set GOOGLE_APPLICATION_CREDENTIALS to the JSON key file
                     sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
@@ -51,7 +51,6 @@ pipeline {
                 }
             }
         }
-        
          stage('Push Docker Image to GCR') {
             steps {
                 script {

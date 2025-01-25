@@ -41,9 +41,11 @@ pipeline {
             } 
         }
 
-        stage('Authenticate with GCR') {
+         stage('Authenticate with GCR') {
             steps {
-                withCredentials([file(credentialsId: 'gcr-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                // Use the Google Cloud plugin for authentication
+                withCredentials([[$class: 'GoogleServiceAccountCredentials', credentialsId: 'gcr-service-account-key']]) {
+                    // The plugin will automatically set GOOGLE_APPLICATION_CREDENTIALS
                     sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                     sh 'gcloud config set project $GCR_PROJECT_ID'
                 }

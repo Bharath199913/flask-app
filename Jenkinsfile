@@ -49,6 +49,7 @@ pipeline {
                     // The plugin will automatically set GOOGLE_APPLICATION_CREDENTIALS to the JSON key file
                     sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                     sh 'gcloud config set project $GCR_PROJECT_ID'
+                    sh 'gcloud auth configure-docker'
                 }
             }
         }
@@ -66,7 +67,13 @@ pipeline {
                     gcloud projects add-iam-policy-binding $GCR_PROJECT_ID \
                       --member="serviceAccount:spinnaker-front50-sa@banded-setting-448905-d6.iam.gserviceaccount.com" \
                       --role="roles/storage.objectAdmin"
+
+                    gcloud projects add-iam-policy-binding banded-setting-448905-d6 \
+                      --member="serviceAccount:spinnaker-front50-sa@banded-setting-448905-d6.iam.gserviceaccount.com" \
+                      --role="roles/artifactregistry.writer"
+
                     """
+                    
                 }
             }
         }

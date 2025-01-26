@@ -49,7 +49,7 @@ pipeline {
                     // The plugin will automatically set GOOGLE_APPLICATION_CREDENTIALS to the JSON key file
                     sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                     sh 'gcloud config set project $GCR_PROJECT_ID'
-                    sh 'gcloud auth configure-docker'
+                    // sh 'gcloud auth configure-docker'
                 }
             }
         }

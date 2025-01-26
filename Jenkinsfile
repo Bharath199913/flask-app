@@ -54,29 +54,29 @@ pipeline {
             }
         }
 
-        stage('Grant IAM Roles') {
-            steps {
-                script {
-                    // Assign roles to the service account running the pipeline
-                    // Only a user or service account with sufficient permissions (roles/owner) can perform this action
-                    sh """
-                    gcloud projects add-iam-policy-binding $GCR_PROJECT_ID \
-                      --member="serviceAccount:spinnaker-front50-sa@banded-setting-448905-d6.iam.gserviceaccount.com" \
-                      --role="roles/serviceusage.serviceUsageAdmin"
+        // stage('Grant IAM Roles') {
+        //     steps {
+        //         script {
+        //             // Assign roles to the service account running the pipeline
+        //             // Only a user or service account with sufficient permissions (roles/owner) can perform this action
+        //             sh """
+        //             gcloud projects add-iam-policy-binding $GCR_PROJECT_ID \
+        //               --member="serviceAccount:spinnaker-front50-sa@banded-setting-448905-d6.iam.gserviceaccount.com" \
+        //               --role="roles/serviceusage.serviceUsageAdmin"
 
-                    gcloud projects add-iam-policy-binding $GCR_PROJECT_ID \
-                      --member="serviceAccount:spinnaker-front50-sa@banded-setting-448905-d6.iam.gserviceaccount.com" \
-                      --role="roles/storage.objectAdmin"
+        //             gcloud projects add-iam-policy-binding $GCR_PROJECT_ID \
+        //               --member="serviceAccount:spinnaker-front50-sa@banded-setting-448905-d6.iam.gserviceaccount.com" \
+        //               --role="roles/storage.objectAdmin"
 
-                    gcloud projects add-iam-policy-binding banded-setting-448905-d6 \
-                      --member="serviceAccount:spinnaker-front50-sa@banded-setting-448905-d6.iam.gserviceaccount.com" \
-                      --role="roles/artifactregistry.writer"
+        //             gcloud projects add-iam-policy-binding banded-setting-448905-d6 \
+        //               --member="serviceAccount:spinnaker-front50-sa@banded-setting-448905-d6.iam.gserviceaccount.com" \
+        //               --role="roles/artifactregistry.writer"
 
-                    """
+        //             """
                     
-                }
-            }
-        }
+        //         }
+        //     }
+        // }
 
         stage('Push Docker Image to GCR') {
             steps {

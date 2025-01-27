@@ -6,10 +6,9 @@ pipeline {
         DOCKER_IMAGE = 'helloworld-app:latest' // Replace with your desired image name
         IMAGE_TAG = 'latest'
         IMAGE_NAME = 'helloworld-app' // Image name
-        GCR_PROJECT_ID = 'banded-setting-448905-d6' // Replace with your GCP project ID
-        GCR_REGISTRY = "gcr.io"
-        GCR_REPO = "${GCR_REGISTRY}/${GCR_PROJECT_ID}/${IMAGE_NAME}"
-        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcr-service-account-key') // Ensure this credential is set in Jenkins
+        DOCKERHUB_USERNAME = 'Bharath1304'  // Replace with your DockerHub username
+        DOCKERHUB_REPO = "${DOCKERHUB_USERNAME}/${IMAGE_NAME}" // DockerHub repository
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') // Jenkins DockerHub credentials ID
     }
 
     stages {
@@ -42,63 +41,28 @@ pipeline {
             }
         }
 
-        stage('Authenticate with GCP') {
+        stage('Authenticate with DockerHub') {
             steps {
-                // Use the updated Google Service Account key stored as FileCredentials
-                withCredentials([file(credentialsId: 'gcr-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                    // The plugin will automatically set GOOGLE_APPLICATION_CREDENTIALS to the JSON key file
-                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                    sh 'gcloud config set project $GCR_PROJECT_ID'
-                    // sh 'gcloud auth configure-docker'
+                // Authenticate with DockerHub
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
                 }
             }
         }
 
-        // stage('Grant IAM Roles') {
-        //     steps {
-        //         script {
-        //             // Assign roles to the service account running the pipeline
-        //             // Only a user or service account with sufficient permissions (roles/owner) can perform this action
-        //             sh """
-        //             gcloud projects add-iam-policy-binding $GCR_PROJECT_ID \
-        //               --member="serviceAccount:spinnaker-front50-sa@banded-setting-448905-d6.iam.gserviceaccount.com" \
-        //               --role="roles/serviceusage.serviceUsageAdmin"
-
-        //             gcloud projects add-iam-policy-binding $GCR_PROJECT_ID \
-        //               --member="serviceAccount:spinnaker-front50-sa@banded-setting-448905-d6.iam.gserviceaccount.com" \
-        //               --role="roles/storage.objectAdmin"
-
-        //             gcloud projects add-iam-policy-binding banded-setting-448905-d6 \
-        //               --member="serviceAccount:spinnaker-front50-sa@banded-setting-448905-d6.iam.gserviceaccount.com" \
-        //               --role="roles/artifactregistry.writer"
-
-        //             """
-                    
-        //         }
-        //     }
-        // }
-
-        stage('Push Docker Image to GCR') {
+        stage('Push Docker Image to DockerHub') {
             steps {
                 script {
-                    // Tag the Docker image
-                    sh "docker tag $DOCKER_IMAGE $GCR_REPO:$IMAGE_TAG"
+                    // Tag the Docker image for DockerHub
+                    sh "docker tag $DOCKER_IMAGE $DOCKERHUB_REPO:$IMAGE_TAG"
                     
-                    // Push the image to GCR
-                    sh "docker push $GCR_REPO:$IMAGE_TAG"
+                    // Push the image to DockerHub
+                    sh "docker push $DOCKERHUB_REPO:$IMAGE_TAG"
                     
-                    // List repositories to confirm success
-                    sh 'gcloud artifacts repositories list'
+                    // Confirm the image is in DockerHub
+                    sh 'docker images'
                 }
             }
         }
     }
 }
-
-
-
-
-
-
-
-

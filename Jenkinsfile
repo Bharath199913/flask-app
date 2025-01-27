@@ -6,7 +6,7 @@ pipeline {
         DOCKER_IMAGE = 'helloworld-app:latest' // Replace with your desired image name
         IMAGE_TAG = 'latest'
         IMAGE_NAME = 'helloworld-app' // Image name
-        DOCKERHUB_USERNAME = 'Bharath1304'  // Replace with your DockerHub username
+        DOCKERHUB_USERNAME = 'bharath1304'  // Replace with your DockerHub username
         DOCKERHUB_REPO = "${DOCKERHUB_USERNAME}/${IMAGE_NAME}" // DockerHub repository
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') // Jenkins DockerHub credentials ID
     }
